@@ -1,9 +1,73 @@
 package main
 
 import (
-	"fmt"
+	"context"
+	"os"
+	"os/signal"
+	"strings"
+	"sync"
+	"syscall"
+
+	"commentservice/cmd/provider"
+
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
+type app struct {
+	ctx              context.Context
+	cancel           context.CancelFunc
+	configuringTasks sync.WaitGroup
+	runningTasks     sync.WaitGroup
+	env              string
+}
+
 func main() {
-	fmt.Println("Olá, mundo!")
+	ctx, cancel := context.WithCancel(context.Background())
+	env := strings.TrimSpace(os.Getenv("ENVIRONMENT"))
+
+	app := &app{
+		ctx:    ctx,
+		cancel: cancel,
+		env:    env,
+	}
+
+	app.configuringLog()
+
+	log.Info().Msgf("Starting CommentService service in [%s] enviroment...\n", env)
+
+	_ = provider.NewProvider(env)
+
+	app.runServerTasks()
+}
+
+func (app *app) configuringLog() {
+	if app.env == "development" {
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+
+	} else {
+		zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	}
+
+	log.Logger = log.With().Caller().Logger()
+}
+
+func (app *app) runServerTasks() {
+	blockForever()
+
+	app.shutdown()
+}
+
+func blockForever() {
+	signalCh := make(chan os.Signal, 1)
+	signal.Notify(signalCh, syscall.SIGINT, syscall.SIGTERM)
+	<-signalCh
+}
+
+func (app *app) shutdown() {
+	app.cancel()
+	log.Info().Msg("Shutting down CommentService Service...")
+	app.runningTasks.Wait()
+	log.Info().Msg("CommentService Service stopped")
 }
