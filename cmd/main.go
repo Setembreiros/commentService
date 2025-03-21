@@ -9,6 +9,7 @@ import (
 	"syscall"
 
 	"commentservice/cmd/provider"
+	"commentservice/internal/api"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -36,9 +37,11 @@ func main() {
 
 	log.Info().Msgf("Starting CommentService service in [%s] enviroment...\n", env)
 
-	_ = provider.NewProvider(env)
+	provider := provider.NewProvider(env)
 
-	app.runServerTasks()
+	apiEnpoint := provider.ProvideApiEndpoint()
+
+	app.runServerTasks(apiEnpoint)
 }
 
 func (app *app) configuringLog() {
@@ -53,10 +56,23 @@ func (app *app) configuringLog() {
 	log.Logger = log.With().Caller().Logger()
 }
 
-func (app *app) runServerTasks() {
+func (app *app) runServerTasks(apiEnpoint *api.Api) {
+	app.runningTasks.Add(1)
+	go app.runApiEndpoint(apiEnpoint)
+
 	blockForever()
 
 	app.shutdown()
+}
+
+func (app *app) runApiEndpoint(apiEnpoint *api.Api) {
+	defer app.runningTasks.Done()
+
+	err := apiEnpoint.Run(app.ctx)
+	if err != nil {
+		log.Panic().Err(err).Msg("Closing CommentService Api failed")
+	}
+	log.Info().Msg("CommentService Api stopped")
 }
 
 func blockForever() {
