@@ -2,6 +2,7 @@ package unit_test_create_comment
 
 import (
 	"bytes"
+	"commentservice/internal/bus"
 	"encoding/json"
 	"net/http/httptest"
 	"strings"
@@ -24,6 +25,18 @@ func setUp(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	apiResponse = httptest.NewRecorder()
 	ginContext, _ = gin.CreateTestContext(apiResponse)
+}
+
+func createEvent(eventName string, eventData any) (*bus.Event, error) {
+	dataEvent, err := serializeData(eventData)
+	if err != nil {
+		return nil, err
+	}
+
+	return &bus.Event{
+		Type: eventName,
+		Data: dataEvent,
+	}, nil
 }
 
 func serializeData(data any) ([]byte, error) {

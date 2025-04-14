@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"commentservice/internal/bus"
 	"commentservice/internal/feature/create_comment"
@@ -30,11 +29,10 @@ func setUpHandler(t *testing.T) {
 
 func TestCreateComment(t *testing.T) {
 	setUpHandler(t)
-	timeNow, _ := time.Parse(timeLayout, time.Now().UTC().Format(timeLayout))
 	comment := &model.Comment{
-		Username:  "usernameA",
-		Text:      "o meu comentario",
-		CreatedAt: timeNow,
+		Username: "usernameA",
+		PostId:   "post1",
+		Text:     "o meu comentario",
 	}
 	data, _ := serializeData(comment)
 	ginContext.Request = httptest.NewRequest(http.MethodPost, "/comment", bytes.NewBuffer(data))
@@ -53,11 +51,10 @@ func TestCreateComment(t *testing.T) {
 
 func TestInternalServerErrorOnCreateComment(t *testing.T) {
 	setUpHandler(t)
-	timeNow, _ := time.Parse(timeLayout, time.Now().UTC().Format(timeLayout))
 	comment := &model.Comment{
-		Username:  "usernameA",
-		Text:      "o meu comentario",
-		CreatedAt: timeNow,
+		Username: "usernameA",
+		PostId:   "post1",
+		Text:     "o meu comentario",
 	}
 	data, _ := serializeData(comment)
 	ginContext.Request = httptest.NewRequest(http.MethodPost, "/comment", bytes.NewBuffer(data))
