@@ -6,7 +6,7 @@ PROD-CONN_STR=postgres://postgres:artis12345@artis.c5i8qu2qshhb.eu-west-3.rds.am
 update:
 	go mod tidy
 build: update
-	go build -o ./deployment/${PROD-ENVIRONMENT}/reactionService cmd/main.go
+	go build -o ./deployment/${PROD-ENVIRONMENT}/commentService cmd/main.go
 run:
 	export CONN_STR="${PROD-CONN_STR}" && export ENVIRONMENT="${PROD-ENVIRONMENT}" && go run ./cmd/main.go
 run-dev:
