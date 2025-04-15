@@ -32,11 +32,11 @@ func TestCreateComment(t *testing.T) {
 	comment := &model.Comment{
 		Username: "usernameA",
 		PostId:   "post1",
-		Text:     "o meu comentario",
+		Content:  "o meu comentario",
 	}
 	data, _ := serializeData(comment)
 	ginContext.Request = httptest.NewRequest(http.MethodPost, "/comment", bytes.NewBuffer(data))
-	controllerService.EXPECT().CreateComment(comment).Return(nil)
+	controllerService.EXPECT().AddComment(comment).Return(nil)
 	expectedBodyResponse := `{
 		"error": false,
 		"message": "200 OK",
@@ -54,12 +54,12 @@ func TestInternalServerErrorOnCreateComment(t *testing.T) {
 	comment := &model.Comment{
 		Username: "usernameA",
 		PostId:   "post1",
-		Text:     "o meu comentario",
+		Content:  "o meu comentario",
 	}
 	data, _ := serializeData(comment)
 	ginContext.Request = httptest.NewRequest(http.MethodPost, "/comment", bytes.NewBuffer(data))
 	expectedError := errors.New("some error")
-	controllerService.EXPECT().CreateComment(comment).Return(expectedError)
+	controllerService.EXPECT().AddComment(comment).Return(expectedError)
 	expectedBodyResponse := `{
 		"error": true,
 		"message": "` + expectedError.Error() + `",

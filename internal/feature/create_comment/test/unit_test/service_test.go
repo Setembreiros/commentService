@@ -31,74 +31,78 @@ func setUpService(t *testing.T) {
 	createCommentService = create_comment.NewCreateCommentService(timeService, serviceRepository, serviceBus)
 }
 
-func TestCreateCommentWithService_WhenItReturnsSuccess(t *testing.T) {
+func TestAddCommentWithService_WhenItReturnsSuccess(t *testing.T) {
 	setUpService(t)
 	comment := &model.Comment{
 		Username: "usernameA",
 		PostId:   "post1",
-		Text:     "o meu comentario",
+		Content:  "o meu comentario",
 	}
 	timeNowString := time.Now().UTC().Format(model.TimeLayout)
 	timeNow, _ := time.Parse(model.TimeLayout, timeNowString)
 	comment.CreatedAt = timeNow
+	expectedCommmentId := uint64(1000)
 	expectedCommentWasCreatedEvent := &event.CommentWasCreatedEvent{
+		CommentId: expectedCommmentId,
 		Username:  comment.Username,
 		PostId:    comment.PostId,
-		Text:      comment.Text,
+		Text:      comment.Content,
 		CreatedAt: comment.CreatedAt.Format(model.TimeLayout),
 	}
 	expectedEvent, _ := createEvent(event.CommentWasCreatedEventName, expectedCommentWasCreatedEvent)
 	timeService.EXPECT().GetTimeNowUtc().Return(timeNow)
-	serviceRepository.EXPECT().AddComment(comment).Return(nil)
+	serviceRepository.EXPECT().AddComment(comment).Return(expectedCommmentId, nil)
 	serviceExternalBus.EXPECT().Publish(expectedEvent).Return(nil)
 
-	err := createCommentService.CreateComment(comment)
+	err := createCommentService.AddComment(comment)
 
 	assert.Nil(t, err)
 	assert.Contains(t, loggerOutput.String(), fmt.Sprintf("Comment was created, username: %s -> postId: %s", comment.Username, comment.PostId))
 }
 
-func TestErrorOnCreateCommentWithService_WhenAddingToRepositoryFails(t *testing.T) {
+func TestErrorOnAddCommentWithService_WhenAddingToRepositoryFails(t *testing.T) {
 	setUpService(t)
 	comment := &model.Comment{
 		Username: "usernameA",
 		PostId:   "post1",
-		Text:     "o meu comentario",
+		Content:  "o meu comentario",
 	}
 	timeNowString := time.Now().UTC().Format(model.TimeLayout)
 	timeNow, _ := time.Parse(model.TimeLayout, timeNowString)
 	comment.CreatedAt = timeNow
 	timeService.EXPECT().GetTimeNowUtc().Return(timeNow)
-	serviceRepository.EXPECT().AddComment(comment).Return(errors.New("some error"))
+	serviceRepository.EXPECT().AddComment(comment).Return(uint64(0), errors.New("some error"))
 
-	err := createCommentService.CreateComment(comment)
+	err := createCommentService.AddComment(comment)
 
 	assert.NotNil(t, err)
 	assert.Contains(t, loggerOutput.String(), fmt.Sprintf("Error adding comment, username: %s -> postId: %s", comment.Username, comment.PostId))
 }
 
-func TestErrorOnCreateCommentWithService_WhenPublishingEventFails(t *testing.T) {
+func TestErrorOnAddCommentWithService_WhenPublishingEventFails(t *testing.T) {
 	setUpService(t)
 	comment := &model.Comment{
 		Username: "usernameA",
 		PostId:   "post1",
-		Text:     "o meu comentario",
+		Content:  "o meu comentario",
 	}
 	timeNowString := time.Now().UTC().Format(model.TimeLayout)
 	timeNow, _ := time.Parse(model.TimeLayout, timeNowString)
 	comment.CreatedAt = timeNow
+	expectedCommmentId := uint64(5)
 	expectedCommentWasCreatedEvent := &event.CommentWasCreatedEvent{
+		CommentId: expectedCommmentId,
 		Username:  comment.Username,
 		PostId:    comment.PostId,
-		Text:      comment.Text,
+		Text:      comment.Content,
 		CreatedAt: comment.CreatedAt.Format(model.TimeLayout),
 	}
 	expectedEvent, _ := createEvent(event.CommentWasCreatedEventName, expectedCommentWasCreatedEvent)
 	timeService.EXPECT().GetTimeNowUtc().Return(timeNow)
-	serviceRepository.EXPECT().AddComment(comment).Return(nil)
+	serviceRepository.EXPECT().AddComment(comment).Return(expectedCommmentId, nil)
 	serviceExternalBus.EXPECT().Publish(expectedEvent).Return(errors.New("some error"))
 
-	err := createCommentService.CreateComment(comment)
+	err := createCommentService.AddComment(comment)
 
 	assert.NotNil(t, err)
 	assert.Contains(t, loggerOutput.String(), fmt.Sprintf("Publishing %s failed, username: %s -> postId: %s", event.CommentWasCreatedEventName, expectedCommentWasCreatedEvent.Username, expectedCommentWasCreatedEvent.PostId))

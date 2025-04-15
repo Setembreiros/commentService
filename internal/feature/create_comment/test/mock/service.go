@@ -36,11 +36,12 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 }
 
 // AddComment mocks base method.
-func (m *MockRepository) AddComment(data *model.Comment) error {
+func (m *MockRepository) AddComment(data *model.Comment) (uint64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddComment", data)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(uint64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // AddComment indicates an expected call of AddComment.
