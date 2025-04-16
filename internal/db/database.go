@@ -13,7 +13,9 @@ type Database struct {
 }
 
 type DatabaseClient interface {
+	Clean()
 	CreateComment(data *model.Comment) (uint64, error)
+	GetCommentById(id uint64) (*model.Comment, error)
 }
 
 func NewDatabase(client DatabaseClient) *Database {

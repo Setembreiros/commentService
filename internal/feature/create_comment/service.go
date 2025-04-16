@@ -36,7 +36,8 @@ func NewCreateCommentService(timeService TimeService, repository Repository, bus
 func (s *CreateCommentService) AddComment(comment *model.Comment) error {
 	comment.CreatedAt = s.timeService.GetTimeNowUtc()
 	var err error
-	comment.CommentId, err = s.repository.AddComment(comment)
+	comment.Id, err = s.repository.AddComment(comment)
+
 	if err != nil {
 		log.Error().Stack().Err(err).Msgf("Error adding comment, username: %s -> postId: %s", comment.Username, comment.PostId)
 		return err
@@ -54,10 +55,10 @@ func (s *CreateCommentService) AddComment(comment *model.Comment) error {
 
 func (s *CreateCommentService) publishCommentWasCreatedEvent(data *model.Comment) error {
 	commentWasCreatedEvent := &event.CommentWasCreatedEvent{
-		CommentId: data.CommentId,
+		CommentId: data.Id,
 		Username:  data.Username,
 		PostId:    data.PostId,
-		Text:      data.Content,
+		Content:   data.Content,
 		CreatedAt: data.CreatedAt.Format(model.TimeLayout),
 	}
 

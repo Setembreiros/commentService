@@ -34,6 +34,18 @@ func (m *MockDatabaseClient) EXPECT() *MockDatabaseClientMockRecorder {
 	return m.recorder
 }
 
+// Clean mocks base method.
+func (m *MockDatabaseClient) Clean() {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "Clean")
+}
+
+// Clean indicates an expected call of Clean.
+func (mr *MockDatabaseClientMockRecorder) Clean() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Clean", reflect.TypeOf((*MockDatabaseClient)(nil).Clean))
+}
+
 // CreateComment mocks base method.
 func (m *MockDatabaseClient) CreateComment(data *model.Comment) (uint64, error) {
 	m.ctrl.T.Helper()
@@ -47,4 +59,19 @@ func (m *MockDatabaseClient) CreateComment(data *model.Comment) (uint64, error) 
 func (mr *MockDatabaseClientMockRecorder) CreateComment(data interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateComment", reflect.TypeOf((*MockDatabaseClient)(nil).CreateComment), data)
+}
+
+// GetCommentById mocks base method.
+func (m *MockDatabaseClient) GetCommentById(id uint64) (*model.Comment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCommentById", id)
+	ret0, _ := ret[0].(*model.Comment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCommentById indicates an expected call of GetCommentById.
+func (mr *MockDatabaseClientMockRecorder) GetCommentById(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCommentById", reflect.TypeOf((*MockDatabaseClient)(nil).GetCommentById), id)
 }

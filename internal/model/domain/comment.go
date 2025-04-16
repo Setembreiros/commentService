@@ -3,7 +3,7 @@ package model
 import "time"
 
 type Comment struct {
-	CommentId uint64    `json:"commentId"`
+	Id        uint64    `json:"id"`
 	Username  string    `json:"username"`
 	PostId    string    `json:"postId"`
 	Content   string    `json:"text"`

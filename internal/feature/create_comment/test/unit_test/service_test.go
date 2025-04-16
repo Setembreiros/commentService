@@ -46,7 +46,7 @@ func TestAddCommentWithService_WhenItReturnsSuccess(t *testing.T) {
 		CommentId: expectedCommmentId,
 		Username:  comment.Username,
 		PostId:    comment.PostId,
-		Text:      comment.Content,
+		Content:   comment.Content,
 		CreatedAt: comment.CreatedAt.Format(model.TimeLayout),
 	}
 	expectedEvent, _ := createEvent(event.CommentWasCreatedEventName, expectedCommentWasCreatedEvent)
@@ -94,7 +94,7 @@ func TestErrorOnAddCommentWithService_WhenPublishingEventFails(t *testing.T) {
 		CommentId: expectedCommmentId,
 		Username:  comment.Username,
 		PostId:    comment.PostId,
-		Text:      comment.Content,
+		Content:   comment.Content,
 		CreatedAt: comment.CreatedAt.Format(model.TimeLayout),
 	}
 	expectedEvent, _ := createEvent(event.CommentWasCreatedEventName, expectedCommentWasCreatedEvent)
