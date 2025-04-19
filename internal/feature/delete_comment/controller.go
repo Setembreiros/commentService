@@ -15,7 +15,7 @@ type DeleteCommentController struct {
 }
 
 type Service interface {
-	RemoveComment(commentId uint64) error
+	DeleteComment(commentId uint64) error
 }
 
 func NewDeleteCommentController(service Service) *DeleteCommentController {
@@ -44,7 +44,7 @@ func (controller *DeleteCommentController) DeleteComment(c *gin.Context) {
 		return
 	}
 
-	err = controller.service.RemoveComment(id)
+	err = controller.service.DeleteComment(id)
 	if err != nil {
 		api.SendInternalServerError(c, err.Error())
 		return

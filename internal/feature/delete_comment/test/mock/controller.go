@@ -33,16 +33,16 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
-// RemoveComment mocks base method.
-func (m *MockService) RemoveComment(commentId uint64) error {
+// DeleteComment mocks base method.
+func (m *MockService) DeleteComment(commentId uint64) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RemoveComment", commentId)
+	ret := m.ctrl.Call(m, "DeleteComment", commentId)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// RemoveComment indicates an expected call of RemoveComment.
-func (mr *MockServiceMockRecorder) RemoveComment(commentId interface{}) *gomock.Call {
+// DeleteComment indicates an expected call of DeleteComment.
+func (mr *MockServiceMockRecorder) DeleteComment(commentId interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveComment", reflect.TypeOf((*MockService)(nil).RemoveComment), commentId)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteComment", reflect.TypeOf((*MockService)(nil).DeleteComment), commentId)
 }

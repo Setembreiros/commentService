@@ -35,7 +35,7 @@ func TestDeleteComment(t *testing.T) {
 	expectedCommentId := uint64(1234)
 	commentId := strconv.FormatUint(expectedCommentId, 10)
 	ginContext.Params = []gin.Param{{Key: "commentId", Value: commentId}}
-	controllerService.EXPECT().RemoveComment(expectedCommentId).Return(nil)
+	controllerService.EXPECT().DeleteComment(expectedCommentId).Return(nil)
 	expectedBodyResponse := `{
 		"error": false,
 		"message": "200 OK",
@@ -87,7 +87,7 @@ func TestInternalServerErrorOnDeleteComment(t *testing.T) {
 	expectedCommentId := uint64(1234)
 	ginContext.Params = []gin.Param{{Key: "commentId", Value: strconv.FormatUint(expectedCommentId, 10)}}
 	expectedError := errors.New("some error")
-	controllerService.EXPECT().RemoveComment(expectedCommentId).Return(expectedError)
+	controllerService.EXPECT().DeleteComment(expectedCommentId).Return(expectedError)
 	expectedBodyResponse := `{
 		"error": true,
 		"message": "` + expectedError.Error() + `",
