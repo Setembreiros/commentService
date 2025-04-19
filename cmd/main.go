@@ -9,7 +9,7 @@ import (
 	"syscall"
 
 	"commentservice/cmd/provider"
-	"commentservice/infrastructure/atlas"
+	"commentservice/infrastructure/database/atlas"
 	"commentservice/infrastructure/kafka"
 	"commentservice/internal/api"
 	"commentservice/internal/bus"
@@ -57,7 +57,7 @@ func main() {
 		os.Exit(1)
 	}
 	subscriptions := provider.ProvideSubscriptions(database)
-	apiEnpoint := provider.ProvideApiEndpoint()
+	apiEnpoint := provider.ProvideApiEndpoint(database, eventBus)
 	kafkaConsumer, err := provider.ProvideKafkaConsumer(eventBus)
 	if err != nil {
 		os.Exit(1)

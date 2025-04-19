@@ -1,11 +1,14 @@
 package provider
 
 import (
-	"commentservice/infrastructure/atlas"
+	"commentservice/infrastructure/database/atlas"
+	"commentservice/infrastructure/database/sql_db"
 	"commentservice/infrastructure/kafka"
 	"commentservice/internal/api"
 	"commentservice/internal/bus"
 	database "commentservice/internal/db"
+	"commentservice/internal/feature/create_comment"
+	"commentservice/internal/service"
 )
 
 type Provider struct {
@@ -24,8 +27,8 @@ func (p *Provider) ProvideAtlasCLient() (*atlas.AtlasClient, error) {
 	return atlas.NewAtlasClient(p.connStr)
 }
 
-func (p *Provider) ProvideDb() (*database.Database, error) {
-	return database.NewDatabase(p.connStr)
+func (p *Provider) ProvideDb() (*sql_db.SqlDatabase, error) {
+	return sql_db.NewDatabase(p.connStr)
 }
 
 func (p *Provider) ProvideEventBus() (*bus.EventBus, error) {
@@ -37,15 +40,17 @@ func (p *Provider) ProvideEventBus() (*bus.EventBus, error) {
 	return bus.NewEventBus(kafkaProducer), nil
 }
 
-func (p *Provider) ProvideApiEndpoint() *api.Api {
-	return api.NewApiEndpoint(p.env, p.ProvideApiControllers())
+func (p *Provider) ProvideApiEndpoint(sqlClient *sql_db.SqlDatabase, bus *bus.EventBus) *api.Api {
+	return api.NewApiEndpoint(p.env, p.ProvideApiControllers(sqlClient, bus))
 }
 
-func (p *Provider) ProvideApiControllers() []api.Controller {
-	return []api.Controller{}
+func (p *Provider) ProvideApiControllers(sqlClient *sql_db.SqlDatabase, bus *bus.EventBus) []api.Controller {
+	return []api.Controller{
+		create_comment.NewCreateCommentController(create_comment.NewCreateCommentService(service.GetTimeServiceInstance(), create_comment.NewCreateCommentRepository(database.NewDatabase(sqlClient)), bus)),
+	}
 }
 
-func (p *Provider) ProvideSubscriptions(database *database.Database) *[]bus.EventSubscription {
+func (p *Provider) ProvideSubscriptions(database *sql_db.SqlDatabase) *[]bus.EventSubscription {
 	return &[]bus.EventSubscription{}
 }
 
