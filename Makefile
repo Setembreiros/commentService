@@ -16,12 +16,12 @@ PROD-CONN_STR=postgres://postgres:artis12345@artis.c5i8qu2qshhb.eu-west-3.rds.am
 update:
 	go mod tidy
 build: update
-	go build -o ./deployment/${PROD-ENVIRONMENT}/commentService cmd/main.go
+	go build -o ./deployment/${PROD-ENVIRONMENT}/commentService cmd/main.go cmd/startup.go
 run:
-	export CONN_STR="${PROD-CONN_STR}" && export ENVIRONMENT="${PROD-ENVIRONMENT}" && go run ./cmd/main.go
+	export CONN_STR="${PROD-CONN_STR}" && export ENVIRONMENT="${PROD-ENVIRONMENT}" && go run ./cmd/main.go ./cmd/startup.go
 run-dev:
-	export CONN_STR="${DEV-CONN_STR}" && export ENVIRONMENT="${DEV-ENVIRONMENT}" && go run ./cmd/main.go
+	export CONN_STR="${DEV-CONN_STR}" && export ENVIRONMENT="${DEV-ENVIRONMENT}" && go run ./cmd/main.go ./cmd/startup.go
 run-dev-windows: 
-	set CONN_STR="${DEV-CONN_STR}" && set ENVIRONMENT=${DEV-ENVIRONMENT} && go run ./cmd/main.go
+	set CONN_STR="${DEV-CONN_STR}" && set ENVIRONMENT=${DEV-ENVIRONMENT} && go run ./cmd/main.go ./cmd/startup.go
 test:
 	go generate -v ./internal/... && go test ./internal/...
