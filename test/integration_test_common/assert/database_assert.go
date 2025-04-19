@@ -16,3 +16,8 @@ func AssertCommentExists(t *testing.T, db *database.Database, expectedCommentId 
 	assert.Equal(t, expectedComment.Username, comment.Username)
 	assert.Equal(t, expectedComment.Content, comment.Content)
 }
+
+func AssertCommentDoesNotExists(t *testing.T, db *database.Database, expectedCommentId uint64) {
+	_, err := db.Client.GetCommentById(expectedCommentId)
+	assert.NotNil(t, err)
+}

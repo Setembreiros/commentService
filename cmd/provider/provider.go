@@ -8,6 +8,7 @@ import (
 	"commentservice/internal/bus"
 	database "commentservice/internal/db"
 	"commentservice/internal/feature/create_comment"
+	"commentservice/internal/feature/delete_comment"
 	"commentservice/internal/service"
 )
 
@@ -47,6 +48,7 @@ func (p *Provider) ProvideApiEndpoint(sqlClient *sql_db.SqlDatabase, bus *bus.Ev
 func (p *Provider) ProvideApiControllers(sqlClient *sql_db.SqlDatabase, bus *bus.EventBus) []api.Controller {
 	return []api.Controller{
 		create_comment.NewCreateCommentController(create_comment.NewCreateCommentService(service.GetTimeServiceInstance(), create_comment.NewCreateCommentRepository(database.NewDatabase(sqlClient)), bus)),
+		delete_comment.NewDeleteCommentController(delete_comment.NewDeleteCommentService(delete_comment.NewDeleteCommentRepository(database.NewDatabase(sqlClient)), bus)),
 	}
 }
 

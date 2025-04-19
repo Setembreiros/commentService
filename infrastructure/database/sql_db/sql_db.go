@@ -139,3 +139,39 @@ func (sd *SqlDatabase) GetNextCommentId() uint64 {
 
 	return lastId + uint64(1)
 }
+
+func (sd *SqlDatabase) DeleteComment(id uint64) error {
+	tx, err := sd.Client.Begin()
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		} else {
+			tx.Commit()
+		}
+	}()
+
+	query := `DELETE FROM comments WHERE id = $1`
+	result, err := tx.Exec(query, id)
+	if err != nil {
+		log.Error().Stack().Err(err).Msgf("Failed to delete comment with id %d", id)
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Error().Stack().Err(err).Msg("Failed to get rows affected")
+		return err
+	}
+
+	if rowsAffected == 0 {
+		log.Warn().Msgf("No comment found with id %d to delete", id)
+		return nil
+	}
+
+	log.Info().Msgf("Comment with id %d deleted successfully", id)
+	return nil
+}
