@@ -18,5 +18,5 @@ func main() {
 		ConnStr: connStr,
 	}
 
-	app.startUp()
+	app.startup()
 }
