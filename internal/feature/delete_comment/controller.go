@@ -25,7 +25,7 @@ func NewDeleteCommentController(service Service) *DeleteCommentController {
 }
 
 func (controller *DeleteCommentController) Routes(routerGroup *gin.RouterGroup) {
-	routerGroup.DELETE("/comment", controller.DeleteComment)
+	routerGroup.DELETE("/comment/:commentId", controller.DeleteComment)
 }
 
 func (controller *DeleteCommentController) DeleteComment(c *gin.Context) {
