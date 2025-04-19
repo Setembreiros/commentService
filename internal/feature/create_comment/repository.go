@@ -15,6 +15,6 @@ func NewCreateCommentRepository(dataRepository *database.Database) *CreateCommen
 	}
 }
 
-func (r *CreateCommentRepository) AddComment(data *model.Comment) (uint64, error) {
+func (r *CreateCommentRepository) CreateComment(data *model.Comment) (uint64, error) {
 	return r.dataRepository.Client.CreateComment(data)
 }

@@ -21,7 +21,7 @@ func repositorySetUp(t *testing.T) {
 	createCommentRepository = create_comment.NewCreateCommentRepository(database.NewDatabase(dbClient))
 }
 
-func TestAddCommentInRepository_WhenItReturnsSuccess(t *testing.T) {
+func TestCreateCommentInRepository_WhenItReturnsSuccess(t *testing.T) {
 	repositorySetUp(t)
 	comment := &model.Comment{
 		Username: "usernameA",
@@ -31,13 +31,13 @@ func TestAddCommentInRepository_WhenItReturnsSuccess(t *testing.T) {
 	expectedCommentId := uint64(5)
 	dbClient.EXPECT().CreateComment(comment).Return(expectedCommentId, nil)
 
-	commentId, err := createCommentRepository.AddComment(comment)
+	commentId, err := createCommentRepository.CreateComment(comment)
 
 	assert.Nil(t, err)
 	assert.Equal(t, expectedCommentId, commentId)
 }
 
-func TestErrorOnAddCommentInRepository_WhenCreateRelationshipFails(t *testing.T) {
+func TestErrorOnCreateCommentInRepository_WhenCreateRelationshipFails(t *testing.T) {
 	repositorySetUp(t)
 	comment := &model.Comment{
 		Username: "usernameA",
@@ -47,7 +47,7 @@ func TestErrorOnAddCommentInRepository_WhenCreateRelationshipFails(t *testing.T)
 	expectedCommentId := uint64(0)
 	dbClient.EXPECT().CreateComment(comment).Return(expectedCommentId, errors.New("some error"))
 
-	commentId, err := createCommentRepository.AddComment(comment)
+	commentId, err := createCommentRepository.CreateComment(comment)
 
 	assert.NotNil(t, err)
 	assert.Equal(t, expectedCommentId, commentId)

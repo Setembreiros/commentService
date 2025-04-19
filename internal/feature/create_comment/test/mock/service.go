@@ -35,19 +35,19 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 	return m.recorder
 }
 
-// AddComment mocks base method.
-func (m *MockRepository) AddComment(data *model.Comment) (uint64, error) {
+// CreateComment mocks base method.
+func (m *MockRepository) CreateComment(data *model.Comment) (uint64, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AddComment", data)
+	ret := m.ctrl.Call(m, "CreateComment", data)
 	ret0, _ := ret[0].(uint64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// AddComment indicates an expected call of AddComment.
-func (mr *MockRepositoryMockRecorder) AddComment(data interface{}) *gomock.Call {
+// CreateComment indicates an expected call of CreateComment.
+func (mr *MockRepositoryMockRecorder) CreateComment(data interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddComment", reflect.TypeOf((*MockRepository)(nil).AddComment), data)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateComment", reflect.TypeOf((*MockRepository)(nil).CreateComment), data)
 }
 
 // MockTimeService is a mock of TimeService interface.

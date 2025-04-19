@@ -34,16 +34,16 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
-// AddComment mocks base method.
-func (m *MockService) AddComment(comment *model.Comment) error {
+// CreateComment mocks base method.
+func (m *MockService) CreateComment(comment *model.Comment) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AddComment", comment)
+	ret := m.ctrl.Call(m, "CreateComment", comment)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// AddComment indicates an expected call of AddComment.
-func (mr *MockServiceMockRecorder) AddComment(comment interface{}) *gomock.Call {
+// CreateComment indicates an expected call of CreateComment.
+func (mr *MockServiceMockRecorder) CreateComment(comment interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddComment", reflect.TypeOf((*MockService)(nil).AddComment), comment)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateComment", reflect.TypeOf((*MockService)(nil).CreateComment), comment)
 }

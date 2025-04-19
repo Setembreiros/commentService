@@ -36,7 +36,7 @@ func TestCreateComment(t *testing.T) {
 	}
 	data, _ := serializeData(comment)
 	ginContext.Request = httptest.NewRequest(http.MethodPost, "/comment", bytes.NewBuffer(data))
-	controllerService.EXPECT().AddComment(comment).Return(nil)
+	controllerService.EXPECT().CreateComment(comment).Return(nil)
 	expectedBodyResponse := `{
 		"error": false,
 		"message": "200 OK",
@@ -59,7 +59,7 @@ func TestInternalServerErrorOnCreateComment(t *testing.T) {
 	data, _ := serializeData(comment)
 	ginContext.Request = httptest.NewRequest(http.MethodPost, "/comment", bytes.NewBuffer(data))
 	expectedError := errors.New("some error")
-	controllerService.EXPECT().AddComment(comment).Return(expectedError)
+	controllerService.EXPECT().CreateComment(comment).Return(expectedError)
 	expectedBodyResponse := `{
 		"error": true,
 		"message": "` + expectedError.Error() + `",
