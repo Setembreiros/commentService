@@ -13,12 +13,12 @@ import (
 )
 
 var dbClient *mock_database.MockDatabaseClient
-var followUserRepository *create_comment.CreateCommentRepository
+var createCommentRepository *create_comment.CreateCommentRepository
 
 func repositorySetUp(t *testing.T) {
 	setUp(t)
 	dbClient = mock_database.NewMockDatabaseClient(ctrl)
-	followUserRepository = create_comment.NewCreateCommentRepository(database.NewDatabase(dbClient))
+	createCommentRepository = create_comment.NewCreateCommentRepository(database.NewDatabase(dbClient))
 }
 
 func TestAddCommentInRepository_WhenItReturnsSuccess(t *testing.T) {
@@ -31,7 +31,7 @@ func TestAddCommentInRepository_WhenItReturnsSuccess(t *testing.T) {
 	expectedCommentId := uint64(5)
 	dbClient.EXPECT().CreateComment(comment).Return(expectedCommentId, nil)
 
-	commentId, err := followUserRepository.AddComment(comment)
+	commentId, err := createCommentRepository.AddComment(comment)
 
 	assert.Nil(t, err)
 	assert.Equal(t, expectedCommentId, commentId)
@@ -47,7 +47,7 @@ func TestErrorOnAddCommentInRepository_WhenCreateRelationshipFails(t *testing.T)
 	expectedCommentId := uint64(0)
 	dbClient.EXPECT().CreateComment(comment).Return(expectedCommentId, errors.New("some error"))
 
-	commentId, err := followUserRepository.AddComment(comment)
+	commentId, err := createCommentRepository.AddComment(comment)
 
 	assert.NotNil(t, err)
 	assert.Equal(t, expectedCommentId, commentId)
