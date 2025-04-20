@@ -140,6 +140,54 @@ func (sd *SqlDatabase) GetNextCommentId() uint64 {
 	return lastId + uint64(1)
 }
 
+func (sd *SqlDatabase) UpdateComment(comment *model.Comment) error {
+	tx, err := sd.Client.Begin()
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		} else {
+			tx.Commit()
+		}
+	}()
+
+	query := `
+		UPDATE comments 
+		SET 
+			content = $1,
+			updatedAt = $2
+		WHERE id = $3
+	`
+
+	result, err := tx.Exec(
+		query,
+		comment.Content,
+		comment.UpdatedAt,
+		comment.Id)
+
+	if err != nil {
+		log.Error().Stack().Err(err).Msgf("Failed to update comment with id %d", comment.Id)
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Error().Stack().Err(err).Msgf("Failed to get rows affected when updating comment with id %d", comment.Id)
+		return err
+	}
+
+	if rowsAffected == 0 {
+		log.Warn().Msgf("No comment found with id %d to update", comment.Id)
+		return nil
+	}
+
+	log.Info().Msgf("Comment with id %d updated successfully", comment.Id)
+	return nil
+}
+
 func (sd *SqlDatabase) DeleteComment(id uint64) error {
 	tx, err := sd.Client.Begin()
 	if err != nil {
@@ -163,7 +211,7 @@ func (sd *SqlDatabase) DeleteComment(id uint64) error {
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		log.Error().Stack().Err(err).Msg("Failed to get rows affected")
+		log.Error().Stack().Err(err).Msgf("Failed to get rows affected when deleting comment with id %d", id)
 		return err
 	}
 

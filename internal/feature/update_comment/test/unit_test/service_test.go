@@ -34,10 +34,8 @@ func setUpService(t *testing.T) {
 func TestUpdateCommentWithService_WhenItReturnsSuccess(t *testing.T) {
 	setUpService(t)
 	comment := &model.Comment{
-		Id:       uint64(1234),
-		Username: "usernameA",
-		PostId:   "post1",
-		Content:  "o meu comentario",
+		Id:      uint64(1234),
+		Content: "o meu comentario",
 	}
 	timeNowString := time.Now().UTC().Format(model.TimeLayout)
 	timeNow, _ := time.Parse(model.TimeLayout, timeNowString)
@@ -63,10 +61,8 @@ func TestUpdateCommentWithService_WhenItReturnsSuccess(t *testing.T) {
 func TestErrorOnUpdateCommentWithService_WhenUpdatingInRepositoryFails(t *testing.T) {
 	setUpService(t)
 	comment := &model.Comment{
-		Id:       uint64(1234),
-		Username: "usernameA",
-		PostId:   "post1",
-		Content:  "o meu comentario",
+		Id:      uint64(1234),
+		Content: "o meu comentario",
 	}
 	timeNowString := time.Now().UTC().Format(model.TimeLayout)
 	timeNow, _ := time.Parse(model.TimeLayout, timeNowString)
@@ -83,10 +79,8 @@ func TestErrorOnUpdateCommentWithService_WhenUpdatingInRepositoryFails(t *testin
 func TestErrorOnUpdateCommentWithService_WhenPublishingEventFails(t *testing.T) {
 	setUpService(t)
 	comment := &model.Comment{
-		Id:       uint64(1234),
-		Username: "usernameA",
-		PostId:   "post1",
-		Content:  "o meu comentario",
+		Id:      uint64(1234),
+		Content: "o meu comentario",
 	}
 	timeNowString := time.Now().UTC().Format(model.TimeLayout)
 	timeNow, _ := time.Parse(model.TimeLayout, timeNowString)

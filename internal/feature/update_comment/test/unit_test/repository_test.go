@@ -3,6 +3,7 @@ package unit_test_update_comment
 import (
 	"errors"
 	"testing"
+	"time"
 
 	database "commentservice/internal/db"
 	mock_database "commentservice/internal/db/test/mock"
@@ -24,10 +25,9 @@ func repositorySetUp(t *testing.T) {
 func TestUpdateCommentInRepository_WhenItReturnsSuccess(t *testing.T) {
 	repositorySetUp(t)
 	comment := &model.Comment{
-		Id:       uint64(1234),
-		Username: "usernameA",
-		PostId:   "post1",
-		Content:  "o meu comentario",
+		Id:        uint64(1234),
+		Content:   "o meu comentario",
+		UpdatedAt: time.Now(),
 	}
 	dbClient.EXPECT().UpdateComment(comment).Return(nil)
 
@@ -39,10 +39,9 @@ func TestUpdateCommentInRepository_WhenItReturnsSuccess(t *testing.T) {
 func TestErrorOnUpdateCommentInRepository_WhenUpdateCommentFails(t *testing.T) {
 	repositorySetUp(t)
 	comment := &model.Comment{
-		Id:       uint64(1234),
-		Username: "usernameA",
-		PostId:   "post1",
-		Content:  "o meu comentario",
+		Id:        uint64(1234),
+		Content:   "o meu comentario",
+		UpdatedAt: time.Now(),
 	}
 	dbClient.EXPECT().UpdateComment(comment).Return(errors.New("some error"))
 

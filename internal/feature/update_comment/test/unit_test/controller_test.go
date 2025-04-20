@@ -34,9 +34,7 @@ func TestUpdateComment(t *testing.T) {
 	setUpController(t)
 	expectedCommentId := "1234"
 	comment := &model.Comment{
-		Username: "usernameA",
-		PostId:   "post1",
-		Content:  "o meu comentario",
+		Content: "o meu comentario",
 	}
 	data, _ := serializeData(comment)
 	comment.Id, _ = strconv.ParseUint(expectedCommentId, 10, 64)
