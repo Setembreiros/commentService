@@ -8,4 +8,5 @@ type Comment struct {
 	PostId    string    `json:"postId"`
 	Content   string    `json:"content"`
 	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }

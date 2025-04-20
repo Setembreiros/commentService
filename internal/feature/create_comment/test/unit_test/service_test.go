@@ -76,7 +76,7 @@ func TestErrorOnCreateCommentWithService_WhenAddingToRepositoryFails(t *testing.
 	err := createCommentService.CreateComment(comment)
 
 	assert.NotNil(t, err)
-	assert.Contains(t, loggerOutput.String(), fmt.Sprintf("Error adding comment, username: %s -> postId: %s", comment.Username, comment.PostId))
+	assert.Contains(t, loggerOutput.String(), fmt.Sprintf("Error creating comment, username: %s -> postId: %s", comment.Username, comment.PostId))
 }
 
 func TestErrorOnCreateCommentWithService_WhenPublishingEventFails(t *testing.T) {
