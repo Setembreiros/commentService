@@ -37,7 +37,7 @@ func TestCreateCommentInRepository_WhenItReturnsSuccess(t *testing.T) {
 	assert.Equal(t, expectedCommentId, commentId)
 }
 
-func TestErrorOnCreateCommentInRepository_WhenCreateRelationshipFails(t *testing.T) {
+func TestErrorOnCreateCommentInRepository_WhenCreateCommentFails(t *testing.T) {
 	repositorySetUp(t)
 	comment := &model.Comment{
 		Username: "usernameA",
