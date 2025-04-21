@@ -70,7 +70,7 @@ func TestBadRequesErrorOnDeleteComment_WhenCommentIdIsNotUint64(t *testing.T) {
 	ginContext.Params = []gin.Param{{Key: "commentId", Value: expectedCommentId}}
 	expectedBodyResponse := `{
 		"error": true,
-		"message": "CommentId couldn't be parsed. CommentId hould be a positive number",
+		"message": "CommentId couldn't be parsed. CommentId should be a positive number",
 		"content": null
 	}`
 

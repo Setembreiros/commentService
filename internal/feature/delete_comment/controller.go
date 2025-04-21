@@ -40,7 +40,7 @@ func (controller *DeleteCommentController) DeleteComment(c *gin.Context) {
 	id, err := strconv.ParseUint(commentId, 10, 64)
 	if err != nil {
 		log.Error().Stack().Err(err).Msgf("CommentId %s couldn't be parsed", commentId)
-		api.SendBadRequest(c, "CommentId couldn't be parsed. CommentId hould be a positive number")
+		api.SendBadRequest(c, "CommentId couldn't be parsed. CommentId should be a positive number")
 		return
 	}
 
