@@ -54,8 +54,6 @@ func (s *UpdateCommentService) UpdateComment(comment *model.Comment) error {
 func (s *UpdateCommentService) publishCommentWasUpdatedEvent(data *model.Comment) error {
 	commentWasUpdatedEvent := &event.CommentWasUpdatedEvent{
 		CommentId: data.Id,
-		Username:  data.Username,
-		PostId:    data.PostId,
 		Content:   data.Content,
 		UpdatedAt: data.UpdatedAt.Format(model.TimeLayout),
 	}

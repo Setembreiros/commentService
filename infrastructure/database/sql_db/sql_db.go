@@ -43,7 +43,7 @@ func (sd *SqlDatabase) Clean() {
 
 	// Clean each table
 	for _, table := range tables {
-		query := fmt.Sprintf("DELETE FROM %s", table)
+		query := fmt.Sprintf("DELETE FROM commentservice.%s", table)
 		_, err = tx.Exec(query)
 		if err != nil {
 			log.Error().Stack().Err(err).Msgf("Failed to clean table %s", table)
@@ -69,12 +69,13 @@ func (sd *SqlDatabase) CreateComment(comment *model.Comment) (uint64, error) {
 	}()
 
 	query := `
-		INSERT INTO comments (
+		INSERT INTO commentservice.comments (
         	postId, 
         	username, 
         	content, 
-        	createdAt
-    	) VALUES ($1, $2, $3, $4)
+        	createdAt,
+			updatedAt
+    	) VALUES ($1, $2, $3, $4, $5)
     	RETURNING id
 	`
 	var commentId uint64
@@ -84,7 +85,8 @@ func (sd *SqlDatabase) CreateComment(comment *model.Comment) (uint64, error) {
 		comment.PostId,
 		comment.Username,
 		comment.Content,
-		comment.CreatedAt).Scan(&commentId)
+		comment.CreatedAt,
+		comment.UpdatedAt).Scan(&commentId)
 	if err != nil {
 		log.Error().Stack().Err(err).Msg("Insert comment failed")
 		return 0, err
@@ -100,8 +102,9 @@ func (sd *SqlDatabase) GetCommentById(id uint64) (*model.Comment, error) {
 			postId, 
 			username, 
 			content, 
-			createdAt
-		FROM comments 
+			createdAt,
+			updatedAt
+		FROM commentservice.comments 
 		WHERE id = $1
 	`
 
@@ -111,7 +114,11 @@ func (sd *SqlDatabase) GetCommentById(id uint64) (*model.Comment, error) {
 		&comment.PostId,
 		&comment.Username,
 		&comment.Content,
-		&comment.CreatedAt)
+		&comment.CreatedAt,
+		&comment.UpdatedAt)
+
+	comment.CreatedAt = comment.CreatedAt.UTC()
+	comment.UpdatedAt = comment.UpdatedAt.UTC()
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -126,7 +133,7 @@ func (sd *SqlDatabase) GetCommentById(id uint64) (*model.Comment, error) {
 
 func (sd *SqlDatabase) GetNextCommentId() uint64 {
 	query := `
-		SELECT nextval('comments_id_seq')
+		SELECT nextval('commentservice.comments_id_seq')
 	`
 
 	var lastId uint64
@@ -155,7 +162,7 @@ func (sd *SqlDatabase) UpdateComment(comment *model.Comment) error {
 	}()
 
 	query := `
-		UPDATE comments 
+		UPDATE commentservice.comments 
 		SET 
 			content = $1,
 			updatedAt = $2
@@ -202,7 +209,7 @@ func (sd *SqlDatabase) DeleteComment(id uint64) error {
 		}
 	}()
 
-	query := `DELETE FROM comments WHERE id = $1`
+	query := `DELETE FROM commentservice.comments WHERE id = $1`
 	result, err := tx.Exec(query, id)
 	if err != nil {
 		log.Error().Stack().Err(err).Msgf("Failed to delete comment with id %d", id)

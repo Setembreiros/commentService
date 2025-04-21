@@ -70,11 +70,13 @@ func TestDeleteComment_WhenDatabaseReturnsSuccess(t *testing.T) {
 }
 
 func populateDb(t *testing.T) uint64 {
+	timeNowString := time.Now().UTC().Format(model.TimeLayout)
+	timeNow, _ := time.Parse(model.TimeLayout, timeNowString)
 	existingComment := &model.Comment{
 		Username:  "usernameA",
 		PostId:    "post1",
 		Content:   "o meu comentario",
-		CreatedAt: time.Now(),
+		CreatedAt: timeNow,
 	}
 
 	return integration_test_arrange.AddComment(t, existingComment)

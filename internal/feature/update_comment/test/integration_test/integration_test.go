@@ -54,13 +54,19 @@ func tearDown() {
 func TestUpdateComment_WhenDatabaseReturnsSuccess(t *testing.T) {
 	setUp(t)
 	defer tearDown()
-	expectedCommentId := populateDb(t)
-	comment := &model.Comment{
+	existingComment := &model.Comment{
+		Username: "usernameA",
+		PostId:   "post1",
+		Content:  "o meu comentario",
+	}
+	commentId := integration_test_arrange.AddComment(t, existingComment)
+	updatedComment := &model.Comment{
+		Id:      commentId,
 		Content: "o meu comentario actualizado",
 	}
-	data, _ := test_common.SerializeData(comment)
+	data, _ := test_common.SerializeData(updatedComment)
 	ginContext.Request = httptest.NewRequest(http.MethodPost, "/comment", bytes.NewBuffer(data))
-	ginContext.Params = []gin.Param{{Key: "commentId", Value: strconv.FormatUint(expectedCommentId, 10)}}
+	ginContext.Params = []gin.Param{{Key: "commentId", Value: strconv.FormatUint(commentId, 10)}}
 	expectedBodyResponse := `{
 		"error": false,
 		"message": "200 OK",
@@ -69,13 +75,18 @@ func TestUpdateComment_WhenDatabaseReturnsSuccess(t *testing.T) {
 	timeNowString := time.Now().UTC().Format(model.TimeLayout)
 	timeNow, _ := time.Parse(model.TimeLayout, timeNowString)
 	timeService.EXPECT().GetTimeNowUtc().Return(timeNow)
-	commentId := integration_test_arrange.GetNextCommentId()
 	expectedCommentWasUpdatedEvent := &event.CommentWasUpdatedEvent{
 		CommentId: commentId,
-		Username:  comment.Username,
-		PostId:    comment.PostId,
-		Content:   comment.Content,
-		UpdatedAt: timeNow.Format(model.TimeLayout),
+		Content:   updatedComment.Content,
+		UpdatedAt: timeNowString,
+	}
+	expectedComment := &model.Comment{
+		Id:        commentId,
+		Username:  existingComment.Username,
+		PostId:    existingComment.PostId,
+		Content:   updatedComment.Content,
+		CreatedAt: existingComment.CreatedAt,
+		UpdatedAt: timeNow,
 	}
 	expectedEvent := integration_test_builder.NewEventBuilder(t).WithName(event.CommentWasUpdatedEventName).WithData(expectedCommentWasUpdatedEvent).Build()
 	serviceExternalBus.EXPECT().Publish(expectedEvent).Return(nil)
@@ -83,16 +94,5 @@ func TestUpdateComment_WhenDatabaseReturnsSuccess(t *testing.T) {
 	controller.UpdateComment(ginContext)
 
 	integration_test_assert.AssertSuccessResult(t, apiResponse, expectedBodyResponse)
-	integration_test_assert.AssertCommentExists(t, db, commentId, comment)
-}
-
-func populateDb(t *testing.T) uint64 {
-	existingComment := &model.Comment{
-		Username:  "usernameA",
-		PostId:    "post1",
-		Content:   "o meu comentario",
-		CreatedAt: time.Now(),
-	}
-
-	return integration_test_arrange.AddComment(t, existingComment)
+	integration_test_assert.AssertCommentExists(t, db, commentId, expectedComment)
 }

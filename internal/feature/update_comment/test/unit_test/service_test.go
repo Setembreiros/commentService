@@ -42,8 +42,6 @@ func TestUpdateCommentWithService_WhenItReturnsSuccess(t *testing.T) {
 	comment.UpdatedAt = timeNow
 	expectedCommentWasUpdatedEvent := &event.CommentWasUpdatedEvent{
 		CommentId: comment.Id,
-		Username:  comment.Username,
-		PostId:    comment.PostId,
 		Content:   comment.Content,
 		UpdatedAt: comment.UpdatedAt.Format(model.TimeLayout),
 	}
@@ -87,8 +85,6 @@ func TestErrorOnUpdateCommentWithService_WhenPublishingEventFails(t *testing.T) 
 	comment.UpdatedAt = timeNow
 	expectedCommentWasUpdatedEvent := &event.CommentWasUpdatedEvent{
 		CommentId: comment.Id,
-		Username:  comment.Username,
-		PostId:    comment.PostId,
 		Content:   comment.Content,
 		UpdatedAt: comment.UpdatedAt.Format(model.TimeLayout),
 	}

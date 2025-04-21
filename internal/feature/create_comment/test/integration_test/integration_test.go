@@ -69,12 +69,19 @@ func TestCreateComment_WhenDatabaseReturnsSuccess(t *testing.T) {
 	timeNow, _ := time.Parse(model.TimeLayout, timeNowString)
 	timeService.EXPECT().GetTimeNowUtc().Return(timeNow)
 	commentId := integration_test_arrange.GetNextCommentId()
+	expectedComment := &model.Comment{
+		Id:        commentId,
+		Username:  comment.Username,
+		PostId:    comment.PostId,
+		Content:   comment.Content,
+		CreatedAt: timeNow,
+	}
 	expectedCommentWasCreatedEvent := &event.CommentWasCreatedEvent{
 		CommentId: commentId,
 		Username:  comment.Username,
 		PostId:    comment.PostId,
 		Content:   comment.Content,
-		CreatedAt: timeNow.Format(model.TimeLayout),
+		CreatedAt: timeNowString,
 	}
 	expectedEvent := integration_test_builder.NewEventBuilder(t).WithName(event.CommentWasCreatedEventName).WithData(expectedCommentWasCreatedEvent).Build()
 	serviceExternalBus.EXPECT().Publish(expectedEvent).Return(nil)
@@ -82,5 +89,5 @@ func TestCreateComment_WhenDatabaseReturnsSuccess(t *testing.T) {
 	controller.CreateComment(ginContext)
 
 	integration_test_assert.AssertSuccessResult(t, apiResponse, expectedBodyResponse)
-	integration_test_assert.AssertCommentExists(t, db, commentId, comment)
+	integration_test_assert.AssertCommentExists(t, db, commentId, expectedComment)
 }
