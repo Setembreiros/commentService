@@ -16,6 +16,7 @@ type DatabaseClient interface {
 	Clean()
 	CreateComment(data *model.Comment) (uint64, error)
 	GetCommentById(id uint64) (*model.Comment, error)
+	UpdateComment(data *model.Comment) error
 	DeleteComment(id uint64) error
 }
 

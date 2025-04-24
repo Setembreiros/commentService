@@ -48,7 +48,7 @@ func TestDeleteComment(t *testing.T) {
 	assert.Equal(t, removeSpace(apiResponse.Body.String()), removeSpace(expectedBodyResponse))
 }
 
-func TestBadRequesErrortDeleteComment_WhenMissingCommentID(t *testing.T) {
+func TestBadRequesErrorOnDeleteComment_WhenMissingCommentID(t *testing.T) {
 	setUpController(t)
 	ginContext.Request, _ = http.NewRequest("DELETE", "/comment", nil)
 	expectedBodyResponse := `{
@@ -63,14 +63,14 @@ func TestBadRequesErrortDeleteComment_WhenMissingCommentID(t *testing.T) {
 	assert.Equal(t, removeSpace(apiResponse.Body.String()), removeSpace(expectedBodyResponse))
 }
 
-func TestBadRequesErrortDeleteComment_WhenCommentIdIsNotUint64(t *testing.T) {
+func TestBadRequesErrorOnDeleteComment_WhenCommentIdIsNotUint64(t *testing.T) {
 	setUpController(t)
 	ginContext.Request, _ = http.NewRequest("DELETE", "/comment", nil)
 	expectedCommentId := "no uint64"
 	ginContext.Params = []gin.Param{{Key: "commentId", Value: expectedCommentId}}
 	expectedBodyResponse := `{
 		"error": true,
-		"message": "CommentId couldn't be parsed. CommentId hould be a positive number",
+		"message": "CommentId couldn't be parsed. CommentId should be a positive number",
 		"content": null
 	}`
 

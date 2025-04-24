@@ -39,7 +39,7 @@ func (s *CreateCommentService) CreateComment(comment *model.Comment) error {
 	comment.Id, err = s.repository.CreateComment(comment)
 
 	if err != nil {
-		log.Error().Stack().Err(err).Msgf("Error adding comment, username: %s -> postId: %s", comment.Username, comment.PostId)
+		log.Error().Stack().Err(err).Msgf("Error creating comment, username: %s -> postId: %s", comment.Username, comment.PostId)
 		return err
 	}
 

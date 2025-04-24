@@ -15,6 +15,8 @@ func AssertCommentExists(t *testing.T, db *database.Database, expectedCommentId 
 	assert.Equal(t, expectedComment.PostId, comment.PostId)
 	assert.Equal(t, expectedComment.Username, comment.Username)
 	assert.Equal(t, expectedComment.Content, comment.Content)
+	assert.Equal(t, expectedComment.CreatedAt, comment.CreatedAt)
+	assert.Equal(t, expectedComment.UpdatedAt, comment.UpdatedAt)
 }
 
 func AssertCommentDoesNotExists(t *testing.T, db *database.Database, expectedCommentId uint64) {
