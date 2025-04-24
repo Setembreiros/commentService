@@ -12,7 +12,7 @@ import (
 //go:generate mockgen -source=service.go -destination=test/mock/service.go
 
 type Repository interface {
-	AddComment(data *model.Comment) (uint64, error)
+	CreateComment(data *model.Comment) (uint64, error)
 }
 
 type TimeService interface {
@@ -33,10 +33,10 @@ func NewCreateCommentService(timeService TimeService, repository Repository, bus
 	}
 }
 
-func (s *CreateCommentService) AddComment(comment *model.Comment) error {
+func (s *CreateCommentService) CreateComment(comment *model.Comment) error {
 	comment.CreatedAt = s.timeService.GetTimeNowUtc()
 	var err error
-	comment.Id, err = s.repository.AddComment(comment)
+	comment.Id, err = s.repository.CreateComment(comment)
 
 	if err != nil {
 		log.Error().Stack().Err(err).Msgf("Error adding comment, username: %s -> postId: %s", comment.Username, comment.PostId)

@@ -31,7 +31,7 @@ func setUpService(t *testing.T) {
 	createCommentService = create_comment.NewCreateCommentService(timeService, serviceRepository, serviceBus)
 }
 
-func TestAddCommentWithService_WhenItReturnsSuccess(t *testing.T) {
+func TestCreateCommentWithService_WhenItReturnsSuccess(t *testing.T) {
 	setUpService(t)
 	comment := &model.Comment{
 		Username: "usernameA",
@@ -51,16 +51,16 @@ func TestAddCommentWithService_WhenItReturnsSuccess(t *testing.T) {
 	}
 	expectedEvent, _ := createEvent(event.CommentWasCreatedEventName, expectedCommentWasCreatedEvent)
 	timeService.EXPECT().GetTimeNowUtc().Return(timeNow)
-	serviceRepository.EXPECT().AddComment(comment).Return(expectedCommmentId, nil)
+	serviceRepository.EXPECT().CreateComment(comment).Return(expectedCommmentId, nil)
 	serviceExternalBus.EXPECT().Publish(expectedEvent).Return(nil)
 
-	err := createCommentService.AddComment(comment)
+	err := createCommentService.CreateComment(comment)
 
 	assert.Nil(t, err)
 	assert.Contains(t, loggerOutput.String(), fmt.Sprintf("Comment was created, username: %s -> postId: %s", comment.Username, comment.PostId))
 }
 
-func TestErrorOnAddCommentWithService_WhenAddingToRepositoryFails(t *testing.T) {
+func TestErrorOnCreateCommentWithService_WhenAddingToRepositoryFails(t *testing.T) {
 	setUpService(t)
 	comment := &model.Comment{
 		Username: "usernameA",
@@ -71,15 +71,15 @@ func TestErrorOnAddCommentWithService_WhenAddingToRepositoryFails(t *testing.T) 
 	timeNow, _ := time.Parse(model.TimeLayout, timeNowString)
 	comment.CreatedAt = timeNow
 	timeService.EXPECT().GetTimeNowUtc().Return(timeNow)
-	serviceRepository.EXPECT().AddComment(comment).Return(uint64(0), errors.New("some error"))
+	serviceRepository.EXPECT().CreateComment(comment).Return(uint64(0), errors.New("some error"))
 
-	err := createCommentService.AddComment(comment)
+	err := createCommentService.CreateComment(comment)
 
 	assert.NotNil(t, err)
 	assert.Contains(t, loggerOutput.String(), fmt.Sprintf("Error adding comment, username: %s -> postId: %s", comment.Username, comment.PostId))
 }
 
-func TestErrorOnAddCommentWithService_WhenPublishingEventFails(t *testing.T) {
+func TestErrorOnCreateCommentWithService_WhenPublishingEventFails(t *testing.T) {
 	setUpService(t)
 	comment := &model.Comment{
 		Username: "usernameA",
@@ -99,10 +99,10 @@ func TestErrorOnAddCommentWithService_WhenPublishingEventFails(t *testing.T) {
 	}
 	expectedEvent, _ := createEvent(event.CommentWasCreatedEventName, expectedCommentWasCreatedEvent)
 	timeService.EXPECT().GetTimeNowUtc().Return(timeNow)
-	serviceRepository.EXPECT().AddComment(comment).Return(expectedCommmentId, nil)
+	serviceRepository.EXPECT().CreateComment(comment).Return(expectedCommmentId, nil)
 	serviceExternalBus.EXPECT().Publish(expectedEvent).Return(errors.New("some error"))
 
-	err := createCommentService.AddComment(comment)
+	err := createCommentService.CreateComment(comment)
 
 	assert.NotNil(t, err)
 	assert.Contains(t, loggerOutput.String(), fmt.Sprintf("Publishing %s failed, username: %s -> postId: %s", event.CommentWasCreatedEventName, expectedCommentWasCreatedEvent.Username, expectedCommentWasCreatedEvent.PostId))

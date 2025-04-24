@@ -15,7 +15,7 @@ type CreateCommentController struct {
 }
 
 type Service interface {
-	AddComment(comment *model.Comment) error
+	CreateComment(comment *model.Comment) error
 }
 
 func NewCreateCommentController(service Service) *CreateCommentController {
@@ -38,7 +38,7 @@ func (controller *CreateCommentController) CreateComment(c *gin.Context) {
 		return
 	}
 
-	err := controller.service.AddComment(&comment)
+	err := controller.service.CreateComment(&comment)
 	if err != nil {
 		api.SendInternalServerError(c, err.Error())
 		return

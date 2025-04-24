@@ -61,6 +61,20 @@ func (mr *MockDatabaseClientMockRecorder) CreateComment(data interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateComment", reflect.TypeOf((*MockDatabaseClient)(nil).CreateComment), data)
 }
 
+// DeleteComment mocks base method.
+func (m *MockDatabaseClient) DeleteComment(id uint64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteComment", id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteComment indicates an expected call of DeleteComment.
+func (mr *MockDatabaseClientMockRecorder) DeleteComment(id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteComment", reflect.TypeOf((*MockDatabaseClient)(nil).DeleteComment), id)
+}
+
 // GetCommentById mocks base method.
 func (m *MockDatabaseClient) GetCommentById(id uint64) (*model.Comment, error) {
 	m.ctrl.T.Helper()
