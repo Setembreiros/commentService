@@ -25,14 +25,14 @@ func NewDeleteCommentService(repository Repository, bus *bus.EventBus) *DeleteCo
 	}
 }
 
-func (s *DeleteCommentService) DeleteComment(commentId uint64) error {
+func (s *DeleteCommentService) DeleteComment(postId string, commentId uint64) error {
 	err := s.repository.DeleteComment(commentId)
 	if err != nil {
 		log.Error().Stack().Err(err).Msgf("Error deleting comment, commentId: %d", commentId)
 		return err
 	}
 
-	err = s.publishCommentWasDeletedEvent(commentId)
+	err = s.publishCommentWasDeletedEvent(postId, commentId)
 	if err != nil {
 		return err
 	}
@@ -42,8 +42,9 @@ func (s *DeleteCommentService) DeleteComment(commentId uint64) error {
 	return nil
 }
 
-func (s *DeleteCommentService) publishCommentWasDeletedEvent(commentId uint64) error {
+func (s *DeleteCommentService) publishCommentWasDeletedEvent(postId string, commentId uint64) error {
 	commentWasDeletedEvent := &event.CommentWasDeletedEvent{
+		PostId:    postId,
 		CommentId: commentId,
 	}
 

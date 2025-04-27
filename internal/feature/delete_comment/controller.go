@@ -15,7 +15,7 @@ type DeleteCommentController struct {
 }
 
 type Service interface {
-	DeleteComment(commentId uint64) error
+	DeleteComment(postId string, commentId uint64) error
 }
 
 func NewDeleteCommentController(service Service) *DeleteCommentController {
@@ -25,11 +25,17 @@ func NewDeleteCommentController(service Service) *DeleteCommentController {
 }
 
 func (controller *DeleteCommentController) Routes(routerGroup *gin.RouterGroup) {
-	routerGroup.DELETE("/comment/:commentId", controller.DeleteComment)
+	routerGroup.DELETE("/comment/:postId/:commentId", controller.DeleteComment)
 }
 
 func (controller *DeleteCommentController) DeleteComment(c *gin.Context) {
 	log.Info().Msg("Handling Request DELETE DeleteComment")
+
+	postId := c.Param("postId")
+	if postId == "" {
+		api.SendBadRequest(c, "Missing postId parameter")
+		return
+	}
 
 	commentId := c.Param("commentId")
 	if commentId == "" {
@@ -44,7 +50,7 @@ func (controller *DeleteCommentController) DeleteComment(c *gin.Context) {
 		return
 	}
 
-	err = controller.service.DeleteComment(id)
+	err = controller.service.DeleteComment(postId, id)
 	if err != nil {
 		api.SendInternalServerError(c, err.Error())
 		return

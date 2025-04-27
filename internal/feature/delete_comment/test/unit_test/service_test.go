@@ -29,15 +29,17 @@ func setUpService(t *testing.T) {
 
 func TestDeleteCommentWithService_WhenItReturnsSuccess(t *testing.T) {
 	setUpService(t)
+	expectedPostId := "post1"
 	expectedCommmentId := uint64(1000)
 	expectedCommentWasDeletedEvent := &event.CommentWasDeletedEvent{
+		PostId:    expectedPostId,
 		CommentId: expectedCommmentId,
 	}
 	expectedEvent, _ := createEvent(event.CommentWasDeletedEventName, expectedCommentWasDeletedEvent)
 	serviceRepository.EXPECT().DeleteComment(expectedCommmentId).Return(nil)
 	serviceExternalBus.EXPECT().Publish(expectedEvent).Return(nil)
 
-	err := deleteCommentService.DeleteComment(expectedCommmentId)
+	err := deleteCommentService.DeleteComment(expectedPostId, expectedCommmentId)
 
 	assert.Nil(t, err)
 	assert.Contains(t, loggerOutput.String(), fmt.Sprintf("Comment was deleted, commentId: %d", expectedCommmentId))
@@ -45,10 +47,11 @@ func TestDeleteCommentWithService_WhenItReturnsSuccess(t *testing.T) {
 
 func TestErrorOnDeleteCommentWithService_WhenAddingToRepositoryFails(t *testing.T) {
 	setUpService(t)
+	expectedPostId := "post1"
 	expectedCommmentId := uint64(1000)
 	serviceRepository.EXPECT().DeleteComment(expectedCommmentId).Return(errors.New("some error"))
 
-	err := deleteCommentService.DeleteComment(expectedCommmentId)
+	err := deleteCommentService.DeleteComment(expectedPostId, expectedCommmentId)
 
 	assert.NotNil(t, err)
 	assert.Contains(t, loggerOutput.String(), fmt.Sprintf("Error deleting comment, commentId: %d", expectedCommmentId))
@@ -56,15 +59,17 @@ func TestErrorOnDeleteCommentWithService_WhenAddingToRepositoryFails(t *testing.
 
 func TestErrorOnDeleteCommentWithService_WhenPublishingEventFails(t *testing.T) {
 	setUpService(t)
+	expectedPostId := "post1"
 	expectedCommmentId := uint64(1000)
 	expectedCommentWasDeletedEvent := &event.CommentWasDeletedEvent{
+		PostId:    expectedPostId,
 		CommentId: expectedCommmentId,
 	}
 	expectedEvent, _ := createEvent(event.CommentWasDeletedEventName, expectedCommentWasDeletedEvent)
 	serviceRepository.EXPECT().DeleteComment(expectedCommmentId).Return(nil)
 	serviceExternalBus.EXPECT().Publish(expectedEvent).Return(errors.New("some error"))
 
-	err := deleteCommentService.DeleteComment(expectedCommmentId)
+	err := deleteCommentService.DeleteComment(expectedPostId, expectedCommmentId)
 
 	assert.NotNil(t, err)
 	assert.Contains(t, loggerOutput.String(), fmt.Sprintf("Publishing %s failed, commentId: %d", event.CommentWasDeletedEventName, expectedCommmentId))

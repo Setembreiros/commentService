@@ -6,4 +6,4 @@ type CommentWasUpdatedEvent struct {
 	UpdatedAt string `json:"updatedAt"`
 }
 
-var CommentWasUpdatedEventName = "CommentWasUpdatedEvent"
+var CommentWasUpdatedEventName = "CommentWasDeletedEvent"

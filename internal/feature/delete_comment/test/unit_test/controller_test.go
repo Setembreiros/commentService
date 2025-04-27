@@ -32,10 +32,14 @@ func setUpController(t *testing.T) {
 func TestDeleteComment(t *testing.T) {
 	setUpController(t)
 	ginContext.Request = httptest.NewRequest(http.MethodDelete, "/comment", nil)
+	expectedPostId := "post1"
 	expectedCommentId := uint64(1234)
 	commentId := strconv.FormatUint(expectedCommentId, 10)
-	ginContext.Params = []gin.Param{{Key: "commentId", Value: commentId}}
-	controllerService.EXPECT().DeleteComment(expectedCommentId).Return(nil)
+	ginContext.Params = []gin.Param{
+		{Key: "postId", Value: expectedPostId},
+		{Key: "commentId", Value: commentId},
+	}
+	controllerService.EXPECT().DeleteComment(expectedPostId, expectedCommentId).Return(nil)
 	expectedBodyResponse := `{
 		"error": false,
 		"message": "200 OK",
@@ -48,9 +52,28 @@ func TestDeleteComment(t *testing.T) {
 	assert.Equal(t, removeSpace(apiResponse.Body.String()), removeSpace(expectedBodyResponse))
 }
 
-func TestBadRequesErrorOnDeleteComment_WhenMissingCommentID(t *testing.T) {
+func TestBadRequesErrorOnDeleteComment_WhenMissingPostId(t *testing.T) {
 	setUpController(t)
 	ginContext.Request, _ = http.NewRequest("DELETE", "/comment", nil)
+	expectedBodyResponse := `{
+		"error": true,
+		"message": "Missing postId parameter",
+		"content": null
+	}`
+
+	controller.DeleteComment(ginContext)
+
+	assert.Equal(t, apiResponse.Code, 400)
+	assert.Equal(t, removeSpace(apiResponse.Body.String()), removeSpace(expectedBodyResponse))
+}
+
+func TestBadRequesErrorOnDeleteComment_WhenMissingCommentId(t *testing.T) {
+	setUpController(t)
+	ginContext.Request, _ = http.NewRequest("DELETE", "/comment", nil)
+	expectedPostId := "post1"
+	ginContext.Params = []gin.Param{
+		{Key: "postId", Value: expectedPostId},
+	}
 	expectedBodyResponse := `{
 		"error": true,
 		"message": "Missing commentId parameter",
@@ -66,8 +89,12 @@ func TestBadRequesErrorOnDeleteComment_WhenMissingCommentID(t *testing.T) {
 func TestBadRequesErrorOnDeleteComment_WhenCommentIdIsNotUint64(t *testing.T) {
 	setUpController(t)
 	ginContext.Request, _ = http.NewRequest("DELETE", "/comment", nil)
+	expectedPostId := "post1"
 	expectedCommentId := "no uint64"
-	ginContext.Params = []gin.Param{{Key: "commentId", Value: expectedCommentId}}
+	ginContext.Params = []gin.Param{
+		{Key: "postId", Value: expectedPostId},
+		{Key: "commentId", Value: expectedCommentId},
+	}
 	expectedBodyResponse := `{
 		"error": true,
 		"message": "CommentId couldn't be parsed. CommentId should be a positive number",
@@ -84,10 +111,15 @@ func TestBadRequesErrorOnDeleteComment_WhenCommentIdIsNotUint64(t *testing.T) {
 func TestInternalServerErrorOnDeleteComment(t *testing.T) {
 	setUpController(t)
 	ginContext.Request = httptest.NewRequest(http.MethodDelete, "/comment", nil)
+	expectedPostId := "post1"
 	expectedCommentId := uint64(1234)
-	ginContext.Params = []gin.Param{{Key: "commentId", Value: strconv.FormatUint(expectedCommentId, 10)}}
+	commentId := strconv.FormatUint(expectedCommentId, 10)
+	ginContext.Params = []gin.Param{
+		{Key: "postId", Value: expectedPostId},
+		{Key: "commentId", Value: commentId},
+	}
 	expectedError := errors.New("some error")
-	controllerService.EXPECT().DeleteComment(expectedCommentId).Return(expectedError)
+	controllerService.EXPECT().DeleteComment(expectedPostId, expectedCommentId).Return(expectedError)
 	expectedBodyResponse := `{
 		"error": true,
 		"message": "` + expectedError.Error() + `",

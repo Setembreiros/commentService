@@ -50,14 +50,19 @@ func TestDeleteComment_WhenDatabaseReturnsSuccess(t *testing.T) {
 	setUp(t)
 	defer tearDown()
 	ginContext.Request = httptest.NewRequest(http.MethodDelete, "/comment", nil)
+	expectedPostId := "post1"
 	expectedCommentId := populateDb(t)
-	ginContext.Params = []gin.Param{{Key: "commentId", Value: strconv.FormatUint(expectedCommentId, 10)}}
+	ginContext.Params = []gin.Param{
+		{Key: "postId", Value: expectedPostId},
+		{Key: "commentId", Value: strconv.FormatUint(expectedCommentId, 10)},
+	}
 	expectedBodyResponse := `{
 		"error": false,
 		"message": "200 OK",
 		"content": null
 	}`
 	expectedCommentWasDeletedEvent := &event.CommentWasDeletedEvent{
+		PostId:    expectedPostId,
 		CommentId: expectedCommentId,
 	}
 	expectedEvent := integration_test_builder.NewEventBuilder(t).WithName(event.CommentWasDeletedEventName).WithData(expectedCommentWasDeletedEvent).Build()
